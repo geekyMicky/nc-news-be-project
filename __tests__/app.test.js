@@ -1,4 +1,6 @@
+const request = require("supertest");
 const endpointsJson = require("../endpoints.json");
+const app = require("../app");
 /* Set up your test imports here */
 
 /* Set up your beforeEach & afterAll functions here */
