@@ -5,9 +5,12 @@ const {
   getArticleById,
   getAllArticles,
   getCommentsByArticleId,
-} = require("./api.controller");
+  postCommentByArticleId,
+} = require("./app.controller");
 
 const app = express();
+
+app.use(express.json());
 
 app.get("/api", getAllNews);
 
@@ -18,6 +21,8 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.use((req, res, next) => {
   res.status(404).send({ msg: "Not Found" });
@@ -30,13 +35,20 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
-    res.status(400).send({ msg: "Invalid input" });
-  } else next(err);
+  const errorCodes = {
+    23503: { status: 404, msg: "Topic or article or user not found" },
+    "22P02": { status: 400, msg: "Invalid input" },
+  };
+
+  if (errorCodes[err.code]) {
+    const { status, msg } = errorCodes[err.code];
+    res.status(status).send({ msg });
+  } else {
+    next(err);
+  }
 });
 
 app.use((err, req, res, next) => {
-  console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
 });
 

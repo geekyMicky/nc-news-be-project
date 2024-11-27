@@ -31,7 +31,6 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body: { topics } }) => {
-        expect(topics).toBeInstanceOf(Array);
         expect(topics.length).toBeGreaterThan(0);
         topics.forEach((topic) => {
           expect(topic).toMatchObject({
@@ -63,7 +62,7 @@ describe("GET/api/articles/:article_id", () => {
         expect(article).toMatchObject({
           author: expect.any(String),
           title: expect.any(String),
-          article_id: expect.any(Number),
+          article_id: 1,
           body: expect.any(String),
           topic: expect.any(String),
           created_at: expect.any(String),
@@ -96,7 +95,6 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles).toBeInstanceOf(Array);
         expect(articles.length).toBeGreaterThan(0);
         articles.forEach((article) => {
           expect(article).toMatchObject({
@@ -139,8 +137,6 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        console.log(comments);
-        expect(comments).toBeInstanceOf(Array);
         expect(comments.length).toBeGreaterThan(0);
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
@@ -149,9 +145,18 @@ describe("GET /api/articles/:article_id/comments", () => {
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            article_id: expect.any(Number),
+            article_id: 1,
           });
         });
+      });
+  });
+
+  test("200: Responds with an empty array for an article with no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
       });
   });
 
@@ -178,7 +183,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/999/comments")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Comments not found");
+        expect(msg).toBe("Article not found");
       });
   });
 
@@ -188,6 +193,62 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Invalid input");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Responds with the posted comment", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "butter_bridge", body: "This is a test comment." })
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          author: "butter_bridge",
+          body: "This is a test comment.",
+          article_id: 1,
+        });
+      });
+  });
+  test("400: Responds with an error for missing username", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ body: "This is a test comment." })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid input");
+      });
+  });
+
+  test("400: Responds with an error for missing body", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "butter_bridge" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid input");
+      });
+  });
+  test("404: Responds with an error for a non-existent article_id", () => {
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send({ username: "butter_bridge", body: "This is a test comment." })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Topic or article or user not found");
+      });
+  });
+  test("404: Responds with an error for a non-existent username", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "non_existent_user", body: "This is a test comment." })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Topic or article or user not found");
       });
   });
 });
