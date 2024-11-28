@@ -214,6 +214,15 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("400: Responsds with an error when an article id is invlaid", () => {
+    return request(app)
+      .post("/api/articles/banana/comments")
+      .send({ username: "butter_bridge", body: "This is a test comment." })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid input");
+      });
+  });
   test("400: Responds with an error for missing username", () => {
     return request(app)
       .post("/api/articles/1/comments")
@@ -223,7 +232,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(msg).toBe("Invalid input");
       });
   });
-
   test("400: Responds with an error for missing body", () => {
     return request(app)
       .post("/api/articles/1/comments")
@@ -252,3 +260,5 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+// Really good error handling, but dont forget to check for when an article id is invalid:
+// E.g /api/articles/banana/comments

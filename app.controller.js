@@ -31,20 +31,6 @@ exports.getArticleById = (req, res, next) => {
 exports.getAllArticles = (req, res, next) => {
   const { sort_by = "created_at", order = "DESC" } = req.query;
 
-  const validSorts = [
-    "article_id",
-    "title",
-    "topic",
-    "author",
-    "created_at",
-    "votes",
-  ];
-  const validOrders = ["ASC", "DESC"];
-
-  if (!validSorts.includes(sort_by) || !validOrders.includes(order)) {
-    return res.status(400).send({ msg: "Invalid sort_by or order parameter" });
-  }
-
   fetchAllArticles(sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });
@@ -56,16 +42,6 @@ exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { sort_by = "created_at", order = "DESC" } = req.query;
 
-  const validSorts = ["comment_id", "votes", "created_at", "author"];
-  const validOrders = ["ASC", "DESC"];
-
-  if (
-    !validSorts.includes(sort_by) ||
-    !validOrders.includes(order.toUpperCase())
-  ) {
-    return res.status(400).send({ msg: "Invalid sort_by or order parameter" });
-  }
-
   fetchCommentsByArticleId(article_id, sort_by, order)
     .then((comments) => {
       res.status(200).send({ comments });
@@ -76,10 +52,6 @@ exports.getCommentsByArticleId = (req, res, next) => {
 exports.postCommentByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { username, body } = req.body;
-
-  if (!username || !body) {
-    return res.status(400).send({ msg: "Invalid input" });
-  }
 
   insertCommentByArticleId(article_id, username, body)
     .then((comment) => {
