@@ -34,13 +34,18 @@
     "app": "^0.1.0",
     "dotenv": "^16.0.0",
     "express": "^4.21.1",
+    "node-fetch": "^3.3.2",
     "pg": "^8.13.1",
-    "psql": "^0.0.1"
+    "psql": "^0.0.1",
+    "winston": "^3.17.0"
   },
   "jest": {
     "setupFilesAfterEnv": [
       "jest-extended/all",
       "jest-sorted"
     ]
+  },
+  "engines": {
+    "node": "16.x"
   }
 }
