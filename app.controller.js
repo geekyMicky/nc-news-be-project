@@ -3,9 +3,11 @@ const {
   fetchAllTopics,
   fetchArticleById,
   fetchAllArticles,
-  fetchCommentsbyArticleId,
+  fetchCommentsByArticleId,
   insertComment,
   updateArticleVotes,
+  fetchCommentByCommentId,
+  removeComment,
 } = require("./app.model");
 
 exports.getAllNews = (req, res) => {
@@ -43,7 +45,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { sort_by = "created_at", order = "DESC" } = req.query;
 
-  fetchCommentsbyArticleId(article_id, sort_by, order)
+  fetchCommentsByArticleId(article_id, sort_by, order)
     .then((comments) => {
       res.status(200).send({ comments });
     })
@@ -71,6 +73,29 @@ exports.patchArticleVotes = (req, res, next) => {
     })
     .then((article) => {
       res.status(200).send({ article });
+    })
+    .catch(next);
+};
+
+exports.getCommentById = (req, res, next) => {
+  const { comment_id } = req.params;
+
+  fetchCommentByCommentId(comment_id)
+    .then((comment) => {
+      res.status(200).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+
+  fetchCommentByCommentId(comment_id)
+    .then(() => {
+      return removeComment(comment_id);
+    })
+    .then(() => {
+      res.status(204).send();
     })
     .catch(next);
 };
