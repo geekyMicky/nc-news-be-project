@@ -117,6 +117,9 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
   return db
     .query(queryText, [inc_votes, article_id])
     .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article not found" });
+      }
       return rows[0];
     })
     .catch((err) => {
@@ -142,6 +145,21 @@ exports.fetchCommentByCommentId = (comment_id) => {
 exports.removeComment = (comment_id) => {
   return db
     .query(`DELETE FROM comments WHERE comment_id = $1;`, [comment_id])
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
+
+exports.fetchAllUsers = () => {
+  return db
+    .query(`SELECT * FROM users;`)
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Users not found" });
+      } else {
+        return rows;
+      }
+    })
     .catch((err) => {
       return Promise.reject(err);
     });

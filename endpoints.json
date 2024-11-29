@@ -59,6 +59,26 @@
       ]
     }
   },
+
+"GET /api/users": {
+  "description": "serves an array of all the users",
+  "queries": [],
+  "exampleResponse": {
+    "users": [
+      {
+        "username": "username1",
+        "name": "name1",
+        "avatar_url": "https://avators.pexels.com/photos/123456/pexels-photo-123456.jpeg?w=700&h=700"
+      },
+      {
+        "username": "username2",
+        "name": "name2",
+        "avatar_url": "https://avators.pexels.com/photos/123456/pexels-photo-123456.jpeg?w=700&h=700"
+      }
+    ]
+  }
+},
+
   "POST /api/articles/:article_id/comments": {
     "description": "posts a comment to a given article_id",
     "queries": [],
@@ -95,5 +115,10 @@
         "article_img_url": "https://images.pexels.com/photos/123456/pexels-photo-123456.jpeg?w=700&h=700"
       }
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a comment by comment_id",
+    "queries": [],
+    "exampleResponse": {}
   }
 }

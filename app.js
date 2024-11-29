@@ -6,6 +6,7 @@ const {
   getAllArticles,
   getCommentsByArticleId,
   getCommentById,
+  getAllUsers,
   postComment,
   patchArticleVotes,
   deleteComment,
@@ -50,6 +51,7 @@ app.get(
   getCommentsByArticleId
 );
 app.get("/api/comments/:comment_id", getCommentById);
+app.get("/api/users", getAllUsers);
 app.post(
   "/api/articles/:article_id/comments",
   validateCommentInput,

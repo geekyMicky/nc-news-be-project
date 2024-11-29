@@ -4,6 +4,7 @@ const {
   fetchArticleById,
   fetchAllArticles,
   fetchCommentsByArticleId,
+  fetchAllUsers,
   insertComment,
   updateArticleVotes,
   fetchCommentByCommentId,
@@ -67,10 +68,7 @@ exports.patchArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
 
-  fetchArticleById(article_id)
-    .then(() => {
-      return updateArticleVotes(article_id, inc_votes);
-    })
+  updateArticleVotes(article_id, inc_votes)
     .then((article) => {
       res.status(200).send({ article });
     })
@@ -96,6 +94,14 @@ exports.deleteComment = (req, res, next) => {
     })
     .then(() => {
       res.status(204).send();
+    })
+    .catch(next);
+};
+
+exports.getAllUsers = (req, res, next) => {
+  fetchAllUsers()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch(next);
 };
