@@ -15,10 +15,24 @@ const validateCommentInput = (req, res, next) => {
   const { username, body } = req.body;
 
   if (!username || !body) {
-    return res.status(400).send({ msg: "Invalid input" });
+    return res.status(400).send({ msg: "Invalid username or body" });
   }
 
   next();
 };
 
-module.exports = { validateSortAndOrder, validateCommentInput };
+const validateVoteInput = (req, res, next) => {
+  const { inc_votes } = req.body;
+
+  if (!inc_votes || typeof inc_votes !== "number") {
+    return res.status(400).send({ msg: "Invalid vote input" });
+  }
+
+  next();
+};
+
+module.exports = {
+  validateSortAndOrder,
+  validateCommentInput,
+  validateVoteInput,
+};

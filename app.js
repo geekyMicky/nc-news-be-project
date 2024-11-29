@@ -5,7 +5,8 @@ const {
   getArticleById,
   getAllArticles,
   getCommentsByArticleId,
-  postCommentByArticleId,
+  postComment,
+  patchArticleVotes,
 } = require("./app.controller");
 const {
   handlePSQLErrors,
@@ -15,6 +16,7 @@ const {
 const {
   validateCommentInput,
   validateSortAndOrder,
+  validateVoteInput,
 } = require("./validationMiddleware");
 
 const app = express();
@@ -48,8 +50,9 @@ app.get(
 app.post(
   "/api/articles/:article_id/comments",
   validateCommentInput,
-  postCommentByArticleId
+  postComment
 );
+app.patch("/api/articles/:article_id", validateVoteInput, patchArticleVotes);
 
 app.use((req, res, next) => {
   res.status(404).send({ msg: "Not Found" });

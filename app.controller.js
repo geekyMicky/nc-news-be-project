@@ -3,8 +3,9 @@ const {
   fetchAllTopics,
   fetchArticleById,
   fetchAllArticles,
-  fetchCommentsByArticleId,
-  insertCommentByArticleId,
+  fetchCommentsbyArticleId,
+  insertComment,
+  updateArticleVotes,
 } = require("./app.model");
 
 exports.getAllNews = (req, res) => {
@@ -42,20 +43,34 @@ exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { sort_by = "created_at", order = "DESC" } = req.query;
 
-  fetchCommentsByArticleId(article_id, sort_by, order)
+  fetchCommentsbyArticleId(article_id, sort_by, order)
     .then((comments) => {
       res.status(200).send({ comments });
     })
     .catch(next);
 };
 
-exports.postCommentByArticleId = (req, res, next) => {
+exports.postComment = (req, res, next) => {
   const { article_id } = req.params;
   const { username, body } = req.body;
 
-  insertCommentByArticleId(article_id, username, body)
+  insertComment(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.patchArticleVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+
+  fetchArticleById(article_id)
+    .then(() => {
+      return updateArticleVotes(article_id, inc_votes);
+    })
+    .then((article) => {
+      res.status(200).send({ article });
     })
     .catch(next);
 };
