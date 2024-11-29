@@ -229,7 +229,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ body: "This is a test comment." })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid input");
+        expect(msg).toBe("Invalid username or body");
       });
   });
   test("400: Responds with an error for missing body", () => {
@@ -238,7 +238,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "butter_bridge" })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid input");
+        expect(msg).toBe("Invalid username or body");
       });
   });
   test("404: Responds with an error for a non-existent article_id", () => {
@@ -260,5 +260,59 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
-// Really good error handling, but dont forget to check for when an article id is invalid:
-// E.g /api/articles/banana/comments
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: Responds with the updated article when inc_vote is positive", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 2,
+          title: expect.any(String),
+          body: expect.any(String),
+          votes: 1,
+          topic: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("200: Responds with the updated article when inc_vote is negative", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -100 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          body: expect.any(String),
+          votes: 0,
+          topic: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("400: Responds with an error for an invalid inc_votes", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "banana" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid vote input");
+      });
+  });
+  test("Respond with an error when no inc_votes input", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid vote input");
+      });
+  });
+});

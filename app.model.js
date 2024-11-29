@@ -60,7 +60,7 @@ exports.fetchAllArticles = (sort_by = "created_at", order = "DESC") => {
     });
 };
 
-exports.fetchCommentsByArticleId = (
+exports.fetchCommentsbyArticleId = (
   article_id,
   sort_by = "created_at",
   order = "DESC"
@@ -90,7 +90,7 @@ exports.fetchCommentsByArticleId = (
     });
 };
 
-exports.insertCommentByArticleId = (article_id, username, body) => {
+exports.insertComment = (article_id, username, body) => {
   const insertCommentQuery = `
     INSERT INTO comments (article_id, author, body)
     VALUES ($1, $2, $3)
@@ -98,6 +98,24 @@ exports.insertCommentByArticleId = (article_id, username, body) => {
 
   return db
     .query(insertCommentQuery, [article_id, username, body])
+    .then(({ rows }) => {
+      return rows[0];
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
+
+exports.updateArticleVotes = (article_id, inc_votes) => {
+  const queryText = `
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *;
+  `;
+
+  return db
+    .query(queryText, [inc_votes, article_id])
     .then(({ rows }) => {
       return rows[0];
     })
