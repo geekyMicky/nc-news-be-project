@@ -197,6 +197,40 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("GET /api/comments/:comment_id", () => {
+  test("200: Responds with a comment object", () => {
+    return request(app)
+      .get("/api/comments/1")
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          comment_id: 1,
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+        });
+      });
+  });
+  test("404: Responds with an error for a non-existent comment_id", () => {
+    return request(app)
+      .get("/api/comments/999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Comment not found");
+      });
+  });
+  test("400: Responds with an error for an invalid comment_id", () => {
+    return request(app)
+      .get("/api/comments/invalid")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid input");
+      });
+  });
+});
+
 describe("POST /api/articles/:article_id/comments", () => {
   test("201: Responds with the posted comment", () => {
     return request(app)
@@ -306,13 +340,22 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(msg).toBe("Invalid vote input");
       });
   });
-  test("Respond with an error when no inc_votes input", () => {
+  test("400: Respond with an error when no inc_votes input", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({})
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Invalid vote input");
+      });
+  });
+  test("404: Responds with an error for a non-existent article_id", () => {
+    return request(app)
+      .patch("/api/articles/999")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Article not found");
       });
   });
 });
@@ -335,6 +378,24 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Invalid input");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("200: Responds with an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users.length).toBeGreaterThan(0);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
       });
   });
 });
