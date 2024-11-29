@@ -5,8 +5,10 @@ const {
   getArticleById,
   getAllArticles,
   getCommentsByArticleId,
+  getCommentById,
   postComment,
   patchArticleVotes,
+  deleteComment,
 } = require("./app.controller");
 const {
   handlePSQLErrors,
@@ -47,12 +49,14 @@ app.get(
   validateSortAndOrder(validCommentSorts, validOrders),
   getCommentsByArticleId
 );
+app.get("/api/comments/:comment_id", getCommentById);
 app.post(
   "/api/articles/:article_id/comments",
   validateCommentInput,
   postComment
 );
 app.patch("/api/articles/:article_id", validateVoteInput, patchArticleVotes);
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.use((req, res, next) => {
   res.status(404).send({ msg: "Not Found" });

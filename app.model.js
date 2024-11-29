@@ -60,7 +60,7 @@ exports.fetchAllArticles = (sort_by = "created_at", order = "DESC") => {
     });
 };
 
-exports.fetchCommentsbyArticleId = (
+exports.fetchCommentsByArticleId = (
   article_id,
   sort_by = "created_at",
   order = "DESC"
@@ -119,6 +119,29 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
     .then(({ rows }) => {
       return rows[0];
     })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
+
+exports.fetchCommentByCommentId = (comment_id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE comment_id = $1;`, [comment_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Comment not found" });
+      } else {
+        return rows[0];
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
+
+exports.removeComment = (comment_id) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1;`, [comment_id])
     .catch((err) => {
       return Promise.reject(err);
     });
