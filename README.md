@@ -43,7 +43,7 @@ You can access the hosted version of the API [here](https://nc-news-be-project-k
 ### Running Tests
 
 To run the tests, use the following command:
-    ```sh
+    ```
     npm test
     ```
 
