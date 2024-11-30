@@ -27,7 +27,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["sort_by", "order"],
+    "queries": ["sort_by", "order", "topic"],
     "exampleResponse": {
       "articles": [
         {
@@ -35,6 +35,15 @@
           "title": "Seafood substitutions are increasing",
           "topic": "cooking",
           "author": "weegembump",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/123456/pexels-photo-123456.jpeg?w=700&h=700",
+          "comment_count": 0
+        },
+        {
+          "title": "UNCOVERED: catspiracy to bring down democracy",
+          "topic": "cats",
+          "author": "rogersop",
           "created_at": "2018-05-30T15:59:13.341Z",
           "votes": 0,
           "article_img_url": "https://images.pexels.com/photos/123456/pexels-photo-123456.jpeg?w=700&h=700",

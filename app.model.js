@@ -17,7 +17,16 @@ exports.fetchAllTopics = () => {
 
 exports.fetchArticleById = (article_id) => {
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
+    .query(
+      `SELECT articles.*, 
+              CAST(COUNT(comments.article_id) AS INT) AS comment_count
+       FROM articles
+       LEFT JOIN comments ON articles.article_id = comments.article_id
+       WHERE articles.article_id = $1
+       GROUP BY articles.article_id;
+      `,
+      [article_id]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article not found" });
@@ -30,8 +39,8 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchAllArticles = (sort_by = "created_at", order = "DESC") => {
-  const queryText = `SELECT
+exports.fetchAllArticles = (sort_by = "created_at", order = "DESC", topic) => {
+  let queryText = `SELECT
         articles.article_id,
         articles.title,
         articles.topic,
@@ -42,17 +51,39 @@ exports.fetchAllArticles = (sort_by = "created_at", order = "DESC") => {
         CAST(COUNT(comments.article_id) AS INT) AS comment_count
       FROM articles
       LEFT JOIN comments
-      ON articles.article_id = comments.article_id
+      ON articles.article_id = comments.article_id`;
+
+  const queryParams = [];
+
+  if (topic) {
+    queryText += ` WHERE articles.topic = $1`;
+    queryParams.push(topic);
+  }
+
+  queryText += `
       GROUP BY articles.article_id
       ORDER BY ${sort_by} ${order};`;
 
   return db
-    .query(queryText)
+    .query(queryText, queryParams)
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Articles not found" });
       } else {
         return rows;
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+};
+
+exports.checkTopicExists = (topic) => {
+  return db
+    .query(`SELECT * FROM topics WHERE slug = $1;`, [topic])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Topic not found" });
       }
     })
     .catch((err) => {

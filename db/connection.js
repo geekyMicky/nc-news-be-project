@@ -15,4 +15,16 @@ if (ENV === "production") {
   config.connectionString = process.env.DATABASE_URL;
   config.max = 2;
 }
+
 module.exports = new Pool(config);
+
+// const pool = new Pool(config);
+
+// pool.query("SELECT * FROM articles WHERE topic = 'cooking';", (err, res) => {
+//   if (err) {
+//     console.error("Error executing query", err.stack);
+//   } else {
+//     console.log("Query result:", res.rows);
+//   }
+//   pool.end();
+// });

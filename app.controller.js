@@ -3,6 +3,7 @@ const {
   fetchAllTopics,
   fetchArticleById,
   fetchAllArticles,
+  checkTopicExists,
   fetchCommentsByArticleId,
   fetchAllUsers,
   insertComment,
@@ -33,13 +34,22 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { sort_by = "created_at", order = "DESC" } = req.query;
+  const { sort_by = "created_at", order = "DESC", topic } = req.query;
 
-  fetchAllArticles(sort_by, order)
-    .then((articles) => {
+  const fetchArticles = () =>
+    fetchAllArticles(sort_by, order, topic).then((articles) => {
       res.status(200).send({ articles });
-    })
-    .catch(next);
+    });
+
+  if (topic) {
+    checkTopicExists(topic)
+      .then(() => {
+        return fetchArticles();
+      })
+      .catch(next);
+  } else {
+    return fetchArticles().catch(next);
+  }
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
