@@ -1,4 +1,6 @@
 const express = require("express");
+const cors = require("cors");
+
 const {
   getAllNews,
   getAllTopics,
@@ -23,6 +25,8 @@ const {
 } = require("./validationMiddleware");
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
